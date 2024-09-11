@@ -1,36 +1,395 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import '../app.css';
+import { Button, Table, Modal, Form, Spinner, Container, Row, Col } from 'react-bootstrap';
+
+// const Dashboard = () => {
+//   const [categories, setCategories] = useState([]);
+//   const [selectedTab, setSelectedTab] = useState('categories');
+//   const [loading, setLoading] = useState(true);
+//   const [showAddCategory, setShowAddCategory] = useState(false);
+//   const [newCategoryName, setNewCategoryName] = useState('');
+//   const [newCategoryImage, setNewCategoryImage] = useState(null);
+
+//   const [users, setUsers] = useState([]);
+//   const [showAddUser, setShowAddUser] = useState(false);
+//   const [newUser, setNewUser] = useState({
+//     email: '',
+//     username: '',
+//     password: '',
+//     role: 'user',
+//   });
+
+//   useEffect(() => {
+//     fetchCategories();
+//   }, []);
+
+//   const fetchCategories = async () => {
+//     try {
+//       const response = await axios.get('http://localhost:8003/api/category/');
+//       setCategories(response.data.data);
+//       setLoading(false);
+//     } catch (error) {
+//       console.error('Error fetching categories:', error);
+//       setLoading(false);
+//     }
+//   };
+
+//   const handleAddCategory = async (e) => {
+//     e.preventDefault();
+//     const formData = new FormData();
+//     formData.append('name', newCategoryName);
+//     formData.append('image', newCategoryImage);
+
+//     try {
+//       const response = await axios.post('http://localhost:8003/api/category/', formData, {
+//         headers: {
+//           'Content-Type': 'multipart/form-data',
+//         },
+//       });
+
+//       setNewCategoryName('');
+//       setNewCategoryImage(null);
+//       setShowAddCategory(false);
+//       const addedCategory = response.data.data;
+
+//       if (addedCategory) {
+//         setCategories((prevCategories) => [...prevCategories, addedCategory]);
+//       }
+//     } catch (error) {
+//       console.error('Error adding category:', error);
+//     }
+//   };
+
+//   const handleDeleteCategory = async (categoryId) => {
+//     try {
+//       await axios.delete(`http://localhost:8003/api/category/${categoryId}`);
+//       setCategories(categories.filter((category) => category._id !== categoryId));
+//     } catch (error) {
+//       console.error('Error deleting category:', error);
+//     }
+//   };
+
+//   useEffect(() => {
+//     const fetchUsers = async () => {
+//       try {
+//         const response = await axios.get('http://localhost:8004/api/user/');
+//         setUsers(response.data.data);
+//         setLoading(false);
+//       } catch (error) {
+//         console.error('Error fetching users:', error);
+//         setLoading(false);
+//       }
+//     };
+
+//     fetchUsers();
+//   }, []);
+
+//   const handleAddUser = async (e) => {
+//     e.preventDefault();
+//     try {
+//       await axios.post('http://localhost:8004/api/user/register', newUser);
+//       setShowAddUser(false);
+//       setNewUser({
+//         email: '',
+//         username: '',
+//         password: '',
+//         role: 'user',
+//       });
+
+//       const response = await axios.get('http://localhost:8004/api/user/');
+//       setUsers(response.data.data);
+//     } catch (error) {
+//       console.error('Error adding user:', error);
+//     }
+//   };
+
+//   const handleDeleteUser = async (userId) => {
+//     try {
+//       await axios.delete(`http://localhost:8004/api/user/${userId}`);
+//       const response = await axios.get('http://localhost:8004/api/user/');
+//       setUsers(response.data.data);
+//     } catch (error) {
+//       console.error('Error deleting user:', error);
+//     }
+//   };
+
+//   const renderTable = () => {
+//     switch (selectedTab) {
+//       case 'categories':
+//         return (
+//           <div>
+//             <h2 className="mb-4 d-flex justify-content-between align-items-center">
+//               Categories
+//               <Button variant="success" onClick={() => setShowAddCategory(true)}>
+//                 Add New Category
+//               </Button>
+//             </h2>
+//             {loading ? (
+//               <Spinner animation="border" role="status">
+//                 <span className="visually-hidden">Loading...</span>
+//               </Spinner>
+//             ) : (
+//               <Table striped bordered hover>
+//                 <thead>
+//                   <tr>
+//                     <th>Name</th>
+//                     <th>Image</th>
+//                     <th>Actions</th>
+//                   </tr>
+//                 </thead>
+//                 <tbody>
+//                   {categories.length > 0 ? (
+//                     categories.map((category) => (
+//                       <tr key={category._id}>
+//                         <td>{category.name}</td>
+//                         <td>
+//                           <img src={category.image} alt={category.name} width="100" height="100" />
+//                         </td>
+//                         <td>
+//                           <Button
+//                             variant="primary"
+//                             className="me-2"
+//                             onClick={() => console.log('Edit functionality pending')}
+//                           >
+//                             Edit
+//                           </Button>
+//                           <Button
+//                             variant="danger"
+//                             onClick={() => handleDeleteCategory(category._id)}
+//                           >
+//                             Remove
+//                           </Button>
+//                         </td>
+//                       </tr>
+//                     ))
+//                   ) : (
+//                     <tr>
+//                       <td colSpan="3" className="text-center">
+//                         No categories found
+//                       </td>
+//                     </tr>
+//                   )}
+//                 </tbody>
+//               </Table>
+//             )}
+
+//             <Modal show={showAddCategory} onHide={() => setShowAddCategory(false)}>
+//               <Modal.Header closeButton>
+//                 <Modal.Title>Add New Category</Modal.Title>
+//               </Modal.Header>
+//               <Modal.Body>
+//                 <Form onSubmit={handleAddCategory}>
+//                   <Form.Group className="mb-3">
+//                     <Form.Label>Category Name</Form.Label>
+//                     <Form.Control
+//                       type="text"
+//                       value={newCategoryName}
+//                       onChange={(e) => setNewCategoryName(e.target.value)}
+//                       required
+//                     />
+//                   </Form.Group>
+//                   <Form.Group className="mb-3">
+//                     <Form.Label>Image</Form.Label>
+//                     <Form.Control
+//                       type="file"
+//                       onChange={(e) => setNewCategoryImage(e.target.files[0])}
+//                       required
+//                     />
+//                   </Form.Group>
+//                   <Button variant="primary" type="submit">
+//                     Add Category
+//                   </Button>
+//                 </Form>
+//               </Modal.Body>
+//               <Modal.Footer>
+//                 <Button variant="secondary" onClick={() => setShowAddCategory(false)}>
+//                   Close
+//                 </Button>
+//               </Modal.Footer>
+//             </Modal>
+//           </div>
+//         );
+//       case 'users':
+//         return (
+//           <div>
+//             <h2 className="mb-4 d-flex justify-content-between align-items-center">
+//               Users
+//               <Button variant="success" onClick={() => setShowAddUser(true)}>
+//                 Add New User
+//               </Button>
+//             </h2>
+//             {loading ? (
+//               <Spinner animation="border" role="status">
+//                 <span className="visually-hidden">Loading...</span>
+//               </Spinner>
+//             ) : (
+//               <Table striped bordered hover>
+//                 <thead>
+//                   <tr>
+//                     <th>Email</th>
+//                     <th>Username</th>
+//                     <th>Role</th>
+//                     <th>Actions</th>
+//                   </tr>
+//                 </thead>
+//                 <tbody>
+//                   {users.length > 0 ? (
+//                     users.map((user) => (
+//                       <tr key={user._id}>
+//                         <td>{user.email}</td>
+//                         <td>{user.username}</td>
+//                         <td>{user.role}</td>
+//                         <td>
+//                           <Button
+//                             variant="primary"
+//                             className="me-2"
+//                             onClick={() => console.log('Edit user:', user)}
+//                           >
+//                             Edit
+//                           </Button>
+//                           <Button
+//                             variant="danger"
+//                             onClick={() => handleDeleteUser(user._id)}
+//                           >
+//                             Remove
+//                           </Button>
+//                         </td>
+//                       </tr>
+//                     ))
+//                   ) : (
+//                     <tr>
+//                       <td colSpan="4" className="text-center">
+//                         No users found
+//                       </td>
+//                     </tr>
+//                   )}
+//                 </tbody>
+//               </Table>
+//             )}
+
+//             <Modal show={showAddUser} onHide={() => setShowAddUser(false)}>
+//               <Modal.Header closeButton>
+//                 <Modal.Title>Add New User</Modal.Title>
+//               </Modal.Header>
+//               <Modal.Body>
+//                 <Form onSubmit={handleAddUser}>
+//                   <Form.Group className="mb-3">
+//                     <Form.Label>Email</Form.Label>
+//                     <Form.Control
+//                       type="email"
+//                       value={newUser.email}
+//                       onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+//                       required
+//                     />
+//                   </Form.Group>
+//                   <Form.Group className="mb-3">
+//                     <Form.Label>Username</Form.Label>
+//                     <Form.Control
+//                       type="text"
+//                       value={newUser.username}
+//                       onChange={(e) => setNewUser({ ...newUser, username: e.target.value })}
+//                       required
+//                     />
+//                   </Form.Group>
+//                   <Form.Group className="mb-3">
+//                     <Form.Label>Password</Form.Label>
+//                     <Form.Control
+//                       type="password"
+//                       value={newUser.password}
+//                       onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+//                       required
+//                     />
+//                   </Form.Group>
+//                   <Form.Group className="mb-3">
+//                     <Form.Label>Role</Form.Label>
+//                     <Form.Control
+//                       as="select"
+//                       value={newUser.role}
+//                       onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
+//                     >
+//                       <option value="user">User</option>
+//                       <option value="admin">Admin</option>
+//                     </Form.Control>
+//                   </Form.Group>
+//                   <Button variant="primary" type="submit">
+//                     Add User
+//                   </Button>
+//                 </Form>
+//               </Modal.Body>
+//               <Modal.Footer>
+//                 <Button variant="secondary" onClick={() => setShowAddUser(false)}>
+//                   Close
+//                 </Button>
+//               </Modal.Footer>
+//             </Modal>
+//           </div>
+//         );
+//       default:
+//         return <div>Select a tab to view data</div>;
+//     }
+//   };
+
+//   return (
+//     <Container fluid>
+//       <Row>
+//         <Col md={3} className="bg-dark text-white p-3">
+//           <h2 className="mb-4">Admin Panel</h2>
+//           <Button
+//             variant={selectedTab === 'categories' ? 'secondary' : 'dark'}
+//             className="w-100 mb-2 text-left"
+//             onClick={() => setSelectedTab('categories')}
+//           >
+//             Categories
+//           </Button>
+//           <Button
+//             variant={selectedTab === 'users' ? 'secondary' : 'dark'}
+//             className="w-100 mb-2 text-left"
+//             onClick={() => setSelectedTab('users')}
+//           >
+//             Users
+//           </Button>
+//         </Col>
+
+//         <Col md={9} className="p-4">
+//           {renderTable()}
+//         </Col>
+//       </Row>
+//     </Container>
+//   );
+// };
+
 
 const Dashboard = () => {
   const [categories, setCategories] = useState([]);
-  const [selectedTab, setSelectedTab] = useState('categories'); // Track the selected tab
+  const [selectedTab, setSelectedTab] = useState('categories');
   const [loading, setLoading] = useState(true);
-  const [showAddCategory, setShowAddCategory] = useState(false); // Manage add category form visibility
+  const [showAddCategory, setShowAddCategory] = useState(false);
+  const [showEditCategory, setShowEditCategory] = useState(false);
+  const [showAddUser, setShowAddUser] = useState(false);
+  const [showEditUser, setShowEditUser] = useState(false);
+
   const [newCategoryName, setNewCategoryName] = useState('');
-  const [newCategoryImage, setNewCategoryImage] = useState(null); // Use File object for image
+  const [newCategoryImage, setNewCategoryImage] = useState(null);
+  const [editingCategory, setEditingCategory] = useState(null);
 
   const [users, setUsers] = useState([]);
-  
-  const [showAddUser, setShowAddUser] = useState(false);
   const [newUser, setNewUser] = useState({
     email: '',
     username: '',
     password: '',
     role: 'user',
   });
-  // Fetch categories on component mount
+  const [editingUser, setEditingUser] = useState(null);
+
   useEffect(() => {
     fetchCategories();
+    fetchUsers();
   }, []);
 
-
-  // Fetch all categories from API
   const fetchCategories = async () => {
     try {
-      const response = await axios.get('http://localhost:8003/api/category/all');
-      console.log("API response : ",response);
-      setCategories(response.data.data); // Assuming the data is in `response.data.data`
+      const response = await axios.get('http://localhost:8003/api/category/');
+      setCategories(response.data.data);
       setLoading(false);
     } catch (error) {
       console.error('Error fetching categories:', error);
@@ -38,11 +397,19 @@ const Dashboard = () => {
     }
   };
 
-  // Handle form submission to add a new category
+  const fetchUsers = async () => {
+    try {
+      const response = await axios.get('http://localhost:8004/api/user/');
+      setUsers(response.data.data);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      setLoading(false);
+    }
+  };
+
   const handleAddCategory = async (e) => {
     e.preventDefault();
-
-    // Create FormData for file upload
     const formData = new FormData();
     formData.append('name', newCategoryName);
     formData.append('image', newCategoryImage);
@@ -54,55 +421,49 @@ const Dashboard = () => {
         },
       });
 
-      // Clear form fields
       setNewCategoryName('');
       setNewCategoryImage(null);
       setShowAddCategory(false);
-
-      // Assuming the API returns the newly added category object
-      const addedCategory = response.data.data; // Make sure your API returns the new category here
-      if (addedCategory) {
-        // Update the categories state without refetching all data
-        setCategories((prevCategories) => [...prevCategories, addedCategory]);
-      } else {
-        // Optionally, handle unexpected response format
-        console.error('Unexpected API response after adding category:', response.data);
-      }
+      setCategories((prevCategories) => [...prevCategories, response.data.data]);
     } catch (error) {
       console.error('Error adding category:', error);
     }
   };
 
-  // Handle deleting a category
+  const handleEditCategory = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append('name', editingCategory.name);
+    if (editingCategory.image) {
+      formData.append('image', editingCategory.image);
+    }
+
+    try {
+      const response = await axios.put(`http://localhost:8003/api/category/${editingCategory._id}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      setShowEditCategory(false);
+      setCategories((prevCategories) =>
+        prevCategories.map((cat) => (cat._id === response.data.data._id ? response.data.data : cat))
+      );
+      setEditingCategory(null);
+    } catch (error) {
+      console.error('Error updating category:', error);
+    }
+  };
+
   const handleDeleteCategory = async (categoryId) => {
     try {
       await axios.delete(`http://localhost:8003/api/category/${categoryId}`);
-      // Refresh categories list after deletion
       setCategories(categories.filter((category) => category._id !== categoryId));
     } catch (error) {
       console.error('Error deleting category:', error);
     }
   };
 
-  
-
-  // Fetch users on component mount
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await axios.get('http://localhost:8004/api/user/');
-        setUsers(response.data.data);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching users:', error);
-        setLoading(false);
-      }
-    };
-
-    fetchUsers();
-  }, []);
-
-  // Handle form submission to add a new user
   const handleAddUser = async (e) => {
     e.preventDefault();
     try {
@@ -114,286 +475,379 @@ const Dashboard = () => {
         password: '',
         role: 'user',
       });
-
-      const response = await axios.get('http://localhost:8004/api/user/');
-      setUsers(response.data);
+      fetchUsers();
     } catch (error) {
       console.error('Error adding user:', error);
     }
   };
 
-  // Handle deleting a user
+  const handleEditUser = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.put(`http://localhost:8004/api/user/${editingUser._id}`, editingUser);
+      setShowEditUser(false);
+      fetchUsers();
+      setEditingUser(null);
+    } catch (error) {
+      console.error('Error updating user:', error);
+    }
+  };
+
   const handleDeleteUser = async (userId) => {
     try {
       await axios.delete(`http://localhost:8004/api/user/${userId}`);
-      const response = await axios.get('http://localhost:8004/api/user/');
-      setUsers(response.data);
+      fetchUsers();
     } catch (error) {
       console.error('Error deleting user:', error);
     }
   };
 
-
-  // Handle table rendering 
   const renderTable = () => {
     switch (selectedTab) {
       case 'categories':
         return (
           <div>
-            <h2 className="text-xl mb-4 flex items-center justify-between">
+            <h2 className="mb-4 d-flex justify-content-between align-items-center">
               Categories
-              <button
-                onClick={() => setShowAddCategory(true)}
-                className="py-2 px-4 bg-green-600 text-white rounded hover:bg-green-700"
-              >
+              <Button variant="success" onClick={() => setShowAddCategory(true)}>
                 Add New Category
-              </button>
+              </Button>
             </h2>
             {loading ? (
-              <div>Loading...</div>
+              <Spinner animation="border" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </Spinner>
             ) : (
-              <table className="min-w-full divide-y divide-gray-200">
+              <Table striped bordered hover>
                 <thead>
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    <th>Name</th>
+                    <th>Image</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody>
                   {categories.length > 0 ? (
                     categories.map((category) => (
                       <tr key={category._id}>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{category.name}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          <img src={category.image} alt={category.name} className="w-16 h-16 object-cover" />
+                        <td>{category.name}</td>
+                        <td>
+                          <img src={category.image} alt={category.name} width="100" height="100" />
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                          <button
-                            onClick={() => console.log('Edit functionality pending')}
-                            className="text-blue-600 hover:text-blue-800 mr-4"
+                        <td>
+                          <Button
+                            variant="primary"
+                            className="me-2"
+                            onClick={() => {
+                              setEditingCategory(category);
+                              setShowEditCategory(true);
+                            }}
                           >
                             Edit
-                          </button>
-                          <button
+                          </Button>
+                          <Button
+                            variant="danger"
                             onClick={() => handleDeleteCategory(category._id)}
-                            className="text-red-600 hover:text-red-800"
                           >
                             Remove
-                          </button>
+                          </Button>
                         </td>
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="3" className="px-6 py-4 text-center text-gray-500">No categories found</td>
+                      <td colSpan="3" className="text-center">
+                        No categories found
+                      </td>
                     </tr>
                   )}
                 </tbody>
-              </table>
+              </Table>
             )}
-            {showAddCategory && (
-              <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
-                <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
-                  <h2 className="text-xl font-bold mb-4">Add New Category</h2>
-                  <form onSubmit={handleAddCategory}>
-                    <div className="mb-4">
-                      <label htmlFor="category-name" className="block text-gray-700">Category Name</label>
-                      <input
-                        id="category-name"
+
+            <Modal show={showAddCategory} onHide={() => setShowAddCategory(false)}>
+              <Modal.Header closeButton>
+                <Modal.Title>Add New Category</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <Form onSubmit={handleAddCategory}>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Category Name</Form.Label>
+                    <Form.Control
+                      type="text"
+                      value={newCategoryName}
+                      onChange={(e) => setNewCategoryName(e.target.value)}
+                      required
+                    />
+                  </Form.Group>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Image</Form.Label>
+                    <Form.Control
+                      type="file"
+                      onChange={(e) => setNewCategoryImage(e.target.files[0])}
+                    />
+                  </Form.Group>
+                  <Button variant="primary" type="submit">
+                    Add Category
+                  </Button>
+                </Form>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button variant="secondary" onClick={() => setShowAddCategory(false)}>
+                  Close
+                </Button>
+              </Modal.Footer>
+            </Modal>
+
+            <Modal show={showEditCategory} onHide={() => setShowEditCategory(false)}>
+              <Modal.Header closeButton>
+                <Modal.Title>Edit Category</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                {editingCategory && (
+                  <Form onSubmit={handleEditCategory}>
+                    <Form.Group className="mb-3">
+                      <Form.Label>Category Name</Form.Label>
+                      <Form.Control
                         type="text"
-                        value={newCategoryName}
-                        onChange={(e) => setNewCategoryName(e.target.value)}
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        value={editingCategory.name}
+                        onChange={(e) => setEditingCategory({ ...editingCategory, name: e.target.value })}
                         required
                       />
-                    </div>
-                    <div className="mb-4">
-                      <label htmlFor="category-image" className="block text-gray-700">Image</label>
-                      <input
-                        id="category-image"
+                    </Form.Group>
+                    <Form.Group className="mb-3">
+                      <Form.Label>Image</Form.Label>
+                      <Form.Control
                         type="file"
-                        onChange={(e) => setNewCategoryImage(e.target.files[0])}
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        required
+                        onChange={(e) => setEditingCategory({ ...editingCategory, image: e.target.files[0] })}
                       />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <button
-                        type="submit"
-                        className="py-2 px-4 bg-blue-600 text-white rounded hover:bg-blue-700"
-                      >
-                        Add Category
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setShowAddCategory(false)}
-                        className="py-2 px-4 bg-red-600 text-white rounded hover:bg-red-700"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            )}
+                      <img src={editingCategory.image} alt={editingCategory.name} width="100" height="100" />
+                    </Form.Group>
+                    <Button variant="primary" type="submit">
+                      Update Category
+                    </Button>
+                  </Form>
+                )}
+              </Modal.Body>
+              <Modal.Footer>
+                <Button variant="secondary" onClick={() => setShowEditCategory(false)}>
+                  Close
+                </Button>
+              </Modal.Footer>
+            </Modal>
           </div>
         );
+
       case 'users':
         return (
           <div>
-            <h2 className="text-xl mb-4 flex items-center justify-between">
+            <h2 className="mb-4 d-flex justify-content-between align-items-center">
               Users
-              <button
-                onClick={() => setShowAddUser(true)}
-                className="py-2 px-4 bg-green-600 text-white rounded hover:bg-green-700"
-              >
+              <Button variant="success" onClick={() => setShowAddUser(true)}>
                 Add New User
-              </button>
+              </Button>
             </h2>
             {loading ? (
-              <div>Loading...</div>
+              <Spinner animation="border" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </Spinner>
             ) : (
-              <table className="min-w-full divide-y divide-gray-200">
+              <Table striped bordered hover>
                 <thead>
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Username</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    <th>Email</th>
+                    <th>Username</th>
+                    <th>Role</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody>
                   {users.length > 0 ? (
                     users.map((user) => (
                       <tr key={user._id}>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{user.email}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.username}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.role}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                          <button
-                            onClick={() => console.log('Edit user:', user)}
-                            className="text-blue-600 hover:text-blue-800 mr-4"
+                        <td>{user.email}</td>
+                        <td>{user.username}</td>
+                        <td>{user.role}</td>
+                        <td>
+                          <Button
+                            variant="primary"
+                            className="me-2"
+                            onClick={() => {
+                              setEditingUser(user);
+                              setShowEditUser(true);
+                            }}
                           >
                             Edit
-                          </button>
-                          <button
+                          </Button>
+                          <Button
+                            variant="danger"
                             onClick={() => handleDeleteUser(user._id)}
-                            className="text-red-600 hover:text-red-800"
                           >
                             Remove
-                          </button>
+                          </Button>
                         </td>
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="4" className="px-6 py-4 text-center text-gray-500">No users found</td>
+                      <td colSpan="4" className="text-center">
+                        No users found
+                      </td>
                     </tr>
                   )}
                 </tbody>
-              </table>
+              </Table>
             )}
-    
-            {showAddUser && (
-              <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
-                <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
-                  <h2 className="text-xl font-bold mb-4">Add New User</h2>
-                  <form onSubmit={handleAddUser}>
-                    <div className="mb-4">
-                      <label htmlFor="email" className="block text-gray-700">Email</label>
-                      <input
-                        id="email"
+
+            <Modal show={showAddUser} onHide={() => setShowAddUser(false)}>
+              <Modal.Header closeButton>
+                <Modal.Title>Add New User</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <Form onSubmit={handleAddUser}>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Email</Form.Label>
+                    <Form.Control
+                      type="email"
+                      value={newUser.email}
+                      onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+                      required
+                    />
+                  </Form.Group>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Username</Form.Label>
+                    <Form.Control
+                      type="text"
+                      value={newUser.username}
+                      onChange={(e) => setNewUser({ ...newUser, username: e.target.value })}
+                      required
+                    />
+                  </Form.Group>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Password</Form.Label>
+                    <Form.Control
+                      type="password"
+                      value={newUser.password}
+                      onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                      required
+                    />
+                  </Form.Group>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Role</Form.Label>
+                    <Form.Control
+                      as="select"
+                      value={newUser.role}
+                      onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
+                    >
+                      <option value="user">User</option>
+                      <option value="admin">Admin</option>
+                    </Form.Control>
+                  </Form.Group>
+                  <Button variant="primary" type="submit">
+                    Add User
+                  </Button>
+                </Form>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button variant="secondary" onClick={() => setShowAddUser(false)}>
+                  Close
+                </Button>
+              </Modal.Footer>
+            </Modal>
+
+            <Modal show={showEditUser} onHide={() => setShowEditUser(false)}>
+              <Modal.Header closeButton>
+                <Modal.Title>Edit User</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                {editingUser && (
+                  <Form onSubmit={handleEditUser}>
+                    <Form.Group className="mb-3">
+                      <Form.Label>Email</Form.Label>
+                      <Form.Control
                         type="email"
-                        value={newUser.email}
-                        onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        value={editingUser.email}
+                        onChange={(e) => setEditingUser({ ...editingUser, email: e.target.value })}
                         required
                       />
-                    </div>
-                    <div className="mb-4">
-                      <label htmlFor="username" className="block text-gray-700">Username</label>
-                      <input
-                        id="username"
+                    </Form.Group>
+                    <Form.Group className="mb-3">
+                      <Form.Label>Username</Form.Label>
+                      <Form.Control
                         type="text"
-                        value={newUser.username}
-                        onChange={(e) => setNewUser({ ...newUser, username: e.target.value })}
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        value={editingUser.username}
+                        onChange={(e) => setEditingUser({ ...editingUser, username: e.target.value })}
                         required
                       />
-                    </div>
-                    <div className="mb-4">
-                      <label htmlFor="password" className="block text-gray-700">Password</label>
-                      <input
-                        id="password"
+                    </Form.Group>
+                    <Form.Group className="mb-3">
+                      <Form.Label>Password</Form.Label>
+                      <Form.Control
                         type="password"
-                        value={newUser.password}
-                        onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        required
+                        value={editingUser.password}
+                        onChange={(e) => setEditingUser({ ...editingUser, password: e.target.value })}
                       />
-                    </div>
-                    <div className="mb-4">
-                      <label htmlFor="role" className="block text-gray-700">Role</label>
-                      <select
-                        id="role"
-                        value={newUser.role}
-                        onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    </Form.Group>
+                    <Form.Group className="mb-3">
+                      <Form.Label>Role</Form.Label>
+                      <Form.Control
+                        as="select"
+                        value={editingUser.role}
+                        onChange={(e) => setEditingUser({ ...editingUser, role: e.target.value })}
                       >
                         <option value="user">User</option>
                         <option value="admin">Admin</option>
-                      </select>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <button
-                        type="submit"
-                        className="py-2 px-4 bg-blue-600 text-white rounded hover:bg-blue-700"
-                      >
-                        Add User
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setShowAddUser(false)}
-                        className="py-2 px-4 bg-red-600 text-white rounded hover:bg-red-700"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            )}
+                      </Form.Control>
+                    </Form.Group>
+                    <Button variant="primary" type="submit">
+                      Update User
+                    </Button>
+                  </Form>
+                )}
+              </Modal.Body>
+              <Modal.Footer>
+                <Button variant="secondary" onClick={() => setShowEditUser(false)}>
+                  Close
+                </Button>
+              </Modal.Footer>
+            </Modal>
           </div>
         );
+
       default:
         return <div>Select a tab to view data</div>;
     }
   };
 
   return (
-    <div className="flex">
-      <div className="w-1/4 h-100 bg-gray-800 text-white p-4 adminSidePanel">
-        <h2 className="text-xl font-bold mb-4">Admin Panel</h2>
-        <button
-          onClick={() => setSelectedTab('categories')}
-          className={`w-full py-2 px-4 mb-2 text-left ${selectedTab === 'categories' ? 'bg-gray-600' : 'hover:bg-gray-700'} rounded`}
-        >
-          Categories
-        </button>
-        <button
-          onClick={() => setSelectedTab('users')}
-          className={`w-full py-2 px-4 mb-2 text-left ${selectedTab === 'users' ? 'bg-gray-600' : 'hover:bg-gray-700'} rounded`}
-        >
-          Users
-        </button>
-      </div>
+    <Container fluid>
+      <Row>
+        <Col md={3} className="bg-dark text-white p-3">
+          <h2 className="mb-4">Admin Panel</h2>
+          <Button
+            variant={selectedTab === 'categories' ? 'secondary' : 'dark'}
+            className="w-100 mb-2 text-left"
+            onClick={() => setSelectedTab('categories')}
+          >
+            Categories
+          </Button>
+          <Button
+            variant={selectedTab === 'users' ? 'secondary' : 'dark'}
+            className="w-100 mb-2 text-left"
+            onClick={() => setSelectedTab('users')}
+          >
+            Users
+          </Button>
+        </Col>
 
-      <div className="w-3/4 p-8">
-        {renderTable()}
-      </div>
-    </div>
+        <Col md={9} className="p-4">
+          {renderTable()}
+        </Col>
+      </Row>
+    </Container>
   );
 };
+
+
 
 export default Dashboard;
