@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axiosInstance from '../axios/axiosInstance.js';
+import axiosInstanceUser from '../axios/axiosInstance.js';
 
 const AdminLogin = () => {
   const [email, setEmail] = useState('');
@@ -12,7 +12,7 @@ const AdminLogin = () => {
     e.preventDefault();
     
     try {
-      const response = await axiosInstance.post('/admin/login/', {
+      const response = await axiosInstanceUser.post('/admin/login/', {
         email,
         password
       });

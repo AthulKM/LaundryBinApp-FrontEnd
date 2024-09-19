@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import axiosInstance from '../axios/axiosInstance.js';
 import { Button, Table, Modal, Form, Spinner, Container, Row, Col } from 'react-bootstrap';
 
 // const Dashboard = () => {
@@ -375,6 +376,7 @@ const Dashboard = () => {
   const [users, setUsers] = useState([]);
   const [newUser, setNewUser] = useState({
     email: '',
+    phoneNumber: '',
     username: '',
     password: '',
     role: 'user',
@@ -388,7 +390,7 @@ const Dashboard = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get('http://localhost:8003/api/category/');
+      const response = await axiosInstance.get('/category/');
       setCategories(response.data.data);
       setLoading(false);
     } catch (error) {
@@ -399,7 +401,7 @@ const Dashboard = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get('http://localhost:8004/api/user/');
+      const response = await axiosInstance.get('/user/');
       setUsers(response.data.data);
       setLoading(false);
     } catch (error) {
@@ -415,7 +417,7 @@ const Dashboard = () => {
     formData.append('image', newCategoryImage);
 
     try {
-      const response = await axios.post('http://localhost:8003/api/category/', formData, {
+      const response = await axiosInstance.post('/category/', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -439,7 +441,7 @@ const Dashboard = () => {
     }
 
     try {
-      const response = await axios.put(`http://localhost:8003/api/category/${editingCategory._id}`, formData, {
+      const response = await axiosInstance.put(`/category/${editingCategory._id}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -457,7 +459,7 @@ const Dashboard = () => {
 
   const handleDeleteCategory = async (categoryId) => {
     try {
-      await axios.delete(`http://localhost:8003/api/category/${categoryId}`);
+      await axiosInstance.delete(`/category/${categoryId}`);
       setCategories(categories.filter((category) => category._id !== categoryId));
     } catch (error) {
       console.error('Error deleting category:', error);
@@ -467,10 +469,11 @@ const Dashboard = () => {
   const handleAddUser = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:8004/api/user/register', newUser);
+      await axiosInstance.post('/user/register', newUser);
       setShowAddUser(false);
       setNewUser({
         email: '',
+        phoneNumber:'',
         username: '',
         password: '',
         role: 'user',
@@ -484,7 +487,7 @@ const Dashboard = () => {
   const handleEditUser = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:8004/api/user/${editingUser._id}`, editingUser);
+      await axiosInstance.put(`/user/${editingUser._id}`, editingUser);
       setShowEditUser(false);
       fetchUsers();
       setEditingUser(null);
@@ -495,7 +498,7 @@ const Dashboard = () => {
 
   const handleDeleteUser = async (userId) => {
     try {
-      await axios.delete(`http://localhost:8004/api/user/${userId}`);
+      await axiosInstance.delete(`/user/${userId}`);
       fetchUsers();
     } catch (error) {
       console.error('Error deleting user:', error);
@@ -655,7 +658,8 @@ const Dashboard = () => {
               <Table striped bordered hover>
                 <thead>
                   <tr>
-                    <th>Email</th>
+                      <th>Email</th>
+                      <th>Phone Number</th>
                     <th>Username</th>
                     <th>Role</th>
                     <th>Actions</th>
@@ -666,6 +670,7 @@ const Dashboard = () => {
                     users.map((user) => (
                       <tr key={user._id}>
                         <td>{user.email}</td>
+                        <td>{ user.phoneNumber}</td>
                         <td>{user.username}</td>
                         <td>{user.role}</td>
                         <td>
@@ -768,6 +773,15 @@ const Dashboard = () => {
                         type="email"
                         value={editingUser.email}
                         onChange={(e) => setEditingUser({ ...editingUser, email: e.target.value })}
+                        required
+                      />
+                    </Form.Group>
+                    <Form.Group className="mb-3">
+                      <Form.Label>Phone Number</Form.Label>
+                      <Form.Control
+                        type="text"
+                        value={editingUser.phoneNumber}
+                        onChange={(e) => setEditingUser({ ...editingUser, phoneNumber: e.target.value })}
                         required
                       />
                     </Form.Group>
