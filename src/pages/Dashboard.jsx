@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import axiosInstance from '../axios/axiosInstance.js';
 import { Button, Table, Modal, Form, Spinner, Container, Row, Col } from 'react-bootstrap';
+import AdminItemsPage from './AdminItemsPage.jsx';
 
 // const Dashboard = () => {
 //   const [categories, setCategories] = useState([]);
@@ -827,6 +827,11 @@ const Dashboard = () => {
             </Modal>
           </div>
         );
+      
+      case 'items':
+        return (
+          <AdminItemsPage/>
+        );
 
       default:
         return <div>Select a tab to view data</div>;
@@ -851,6 +856,13 @@ const Dashboard = () => {
             onClick={() => setSelectedTab('users')}
           >
             Users
+          </Button>
+          <Button
+            variant={selectedTab === 'items' ? 'secondary' : 'dark'}
+            className="w-100 mb-2 text-left"
+            onClick={() => setSelectedTab('items')}
+          >
+            Items
           </Button>
         </Col>
 

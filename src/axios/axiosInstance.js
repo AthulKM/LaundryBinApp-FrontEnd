@@ -17,6 +17,8 @@ axiosInstance.interceptors.request.use((config) => {
     config.baseURL = 'http://localhost:8004/api/'; // Change base URL for user-related requests
   } else if (config.url.includes('/category')) {
     config.baseURL = 'http://localhost:8003/api/'; // Change base URL for category-related requests
+  } else if (config.url.includes('/items')) {
+    config.baseURL = 'http://localhost:8004/api/'; // Change base URL for category-related requests
   }
 
   // Always return the config object
